@@ -1,0 +1,10 @@
+streamlit
+numpy
+torch
+pandas
+transformers
+langchain_community
+langchain_core
+langchain
+llama-cpp-python
+tinydb
