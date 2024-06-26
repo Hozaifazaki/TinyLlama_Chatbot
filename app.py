@@ -11,7 +11,7 @@ class StreamlitApp:
 
         # Initialize Chat id
         if 'chat_id' not in st.session_state:
-            st.session_state.chat_id = None
+            st.session_state['chat_id'] = None
 
     def _initialize_streamlit_app(self):
         st.title("TinyLlama Chatbot")
@@ -32,25 +32,32 @@ class StreamlitApp:
         if "chat_history_db" not in st.session_state:
             st.session_state['chat_history_db'] = ChatHistoryDB('chat_history_db')
 
-    def _default_welcome_message(self):
-        # Add initial message by the user
-        user_initial_message = "Hello Assistant!"
-        st.session_state['chat_history_db'].add_message_to_db(st.session_state['chat_id'], "user", user_initial_message)
-
     def _initialize_sidbar_button(self):
         # Create new session button
-        if st.sidebar.button("New Chat!"):
+        if st.sidebar.button("New Chat!", use_container_width=True):
             st.session_state['chat_history_db'].create_new_chat()
+            st.session_state['chat_id'] = st.session_state['chat_history_db'].get_chat_id()
+            st.rerun()
         
+        if st.sidebar.button("Clear Chat", use_container_width=True):
+            st.session_state['chat_history_db'].delete_chat_history_from_chat_id()
+            st.session_state['chat_id'] = None
+            st.rerun()
+
+    # Display session buttons
+    def display_history_on_sidebar(self):
+        sessions = st.session_state['chat_history_db'].get_all_chats()
+        for session in sessions:
+            chat_id = session['chat_id']
+            if st.sidebar.button(chat_id, use_container_width=True):
+                st.session_state['chat_id'] = chat_id
+                # set chat id on chat history button clicked
+                st.session_state['chat_history_db'].set_chat_id(st.session_state['chat_id'])
+                st.rerun()    
 
     def get_selected_chat_history(self):
         # Initialize chat history from the selected session
-        return st.session_state['chat_history_db'].get_chat_history_from_chat_id(st.session_state.chat_id)
-    
-    def get_last_user_message(self):
-        history = self.get_selected_chat_history()[-1]
-        last_user_message = [data['content'] for data in [history] if data['role'] == 'user'][-1]
-        return last_user_message
+        return st.session_state['chat_history_db'].get_chat_history_from_chat_id()
     
     def display_messages_from_history(self, chat_history):
         for message in chat_history:
@@ -59,7 +66,7 @@ class StreamlitApp:
 
     def display_instant_message(self, role, message):
         # Add user message to chat history
-        st.session_state['chat_history_db'].add_message_to_db(st.session_state['chat_id'], role, message)
+        st.session_state['chat_history_db'].add_message_to_db(role, message)
         # Instance displaying user message in chat message container
         with st.chat_message(role):
             message_placeholder = st.empty()
@@ -74,13 +81,13 @@ class StreamlitApp:
         return response
 
     def run(self):
-        st.session_state['chat_history_db'].display_chats()
-
+        self.display_history_on_sidebar()
+        
         # Display welcome message if no chat session is active
-        if not st.session_state.chat_id:
+        if not st.session_state['chat_id']:
             st.write("Welcome! Please create a new chat or select an existing one from the sidebar.")
         
-        elif st.session_state.chat_id:
+        else:
             chat_history = self.get_selected_chat_history()
             if chat_history:
                 self.display_messages_from_history(chat_history)         

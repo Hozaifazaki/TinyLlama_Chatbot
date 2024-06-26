@@ -1,13 +1,6 @@
 from const.app_paths import AppPaths
 from langchain_community.llms import LlamaCpp
-from langchain_core.callbacks import CallbackManager, StreamingStdOutCallbackHandler
-from langchain_core.prompts import PromptTemplate
-
-from langchain.chains import LLMChain
-from langchain.memory import ConversationBufferMemory
-from langchain_core.prompts import PromptTemplate
-
-
+import time
 class TinyLlama:
     def __init__(self, gen_args, model_path=None) -> None:
         self.gen_args = gen_args
@@ -15,7 +8,6 @@ class TinyLlama:
         self.llm = self.load_model()
         self.system_message = ''
         self.chat_history = None
-        # self.memory = self.create_chat_memory()
         self.memory = ''
     
     def set_chat_history(self, chat_history=None):
@@ -54,7 +46,7 @@ class TinyLlama:
             temperature=self.gen_args['temprature'],
             max_tokens=self.gen_args['max_length'],
             top_p=self.gen_args['top_p'],
-            verbose=True,  # Verbose is required to pass to the callback manager
+            verbose=False,  # Verbose is required to pass to the callback manager, and to show any print function in console
         )
         return llm
 
