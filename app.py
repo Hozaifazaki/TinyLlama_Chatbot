@@ -1,7 +1,9 @@
 import streamlit as st
 from tiny_llama_gguf import TinyLlama
-from chat_history_db import ChatHistoryDB
+from models.chat_history_db import ChatHistoryDB
 from const.pre_prompts import PrePrompts
+
+
 class StreamlitApp:
     def __init__(self) -> None:
         self._initialize_streamlit_app()

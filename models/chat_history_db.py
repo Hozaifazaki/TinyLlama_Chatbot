@@ -1,13 +1,14 @@
-import streamlit as st
 import time
 from tinydb import TinyDB, Query
+from const.app_paths import AppPaths
 
 class ChatHistoryDB:
-    def __init__(self, db_name) -> None:
-        self._initialize_db(db_name)
+    def __init__(self) -> None:
+        self._initialize_db()
         self.chat_id = None
-    def _initialize_db(self, db_name):
-        self.db = TinyDB(f'{db_name}.json')
+
+    def _initialize_db(self):
+        self.db = TinyDB(f'{AppPaths.DB_PATH}')
         self.session = Query()
         
     def set_chat_id(self, chat_id):
@@ -25,6 +26,9 @@ class ChatHistoryDB:
         session = self.db.get(self.session.chat_id == self.chat_id)
         return session['messages'] if session else []
     
+    def get_all_chats(self):
+        return self.db.all()
+    
     def add_message_to_db(self, role, content):
         session = self.db.get(self.session.chat_id == self.chat_id)
         if session:
@@ -34,5 +38,3 @@ class ChatHistoryDB:
     def delete_chat_history_from_chat_id(self):
         self.db.remove(self.session.chat_id == self.chat_id)
 
-    def get_all_chats(self):
-        return self.db.all()

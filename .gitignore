@@ -1,4 +1,4 @@
 __pycache__/
 ./streamlit_chatbot/
-models/
+llm_models/
 implementation_details.md
