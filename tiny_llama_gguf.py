@@ -1,6 +1,8 @@
 from const.app_paths import AppPaths
 from langchain_community.llms import LlamaCpp
-import time
+from langchain.callbacks.manager import CallbackManager
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+
 class TinyLlama:
     def __init__(self, gen_args, model_path=None) -> None:
         self.gen_args = gen_args
@@ -9,6 +11,7 @@ class TinyLlama:
         self.system_message = ''
         self.chat_history = None
         self.memory = ''
+        self.generated_reponse = ''
     
     def set_chat_history(self, chat_history=None):
         self.chat_history = chat_history
@@ -46,15 +49,23 @@ class TinyLlama:
             temperature=self.gen_args['temprature'],
             max_tokens=self.gen_args['max_length'],
             top_p=self.gen_args['top_p'],
-            verbose=False,  # Verbose is required to pass to the callback manager, and to show any print function in console
+            n_ctx=2048,
+            verbose=False,
         )
+        print('Tinyllama loaded')
         return llm
 
     def generate_response(self, chat_history):
         self.set_chat_history(chat_history)
         self.create_prompt_template()
-        response = self.llm.invoke(self.memory)
-        return response
+        
+        self.generated_reponse = ''
+        for token in self.llm.stream(self.memory):
+             yield token
+             self.generated_reponse += token
 
+    def get_generated_response(self):
+        return self.generated_reponse
+    
     def parse_output(self):
         pass

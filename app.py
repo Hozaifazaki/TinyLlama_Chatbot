@@ -65,20 +65,19 @@ class StreamlitApp:
                 st.markdown(message["content"])
 
     def display_instant_message(self, role, message):
-        # Add user message to chat history
-        st.session_state['chat_history_db'].add_message_to_db(role, message)
         # Instance displaying user message in chat message container
         with st.chat_message(role):
-            message_placeholder = st.empty()
-            message_placeholder.markdown(message)
-
+            if role == "assistant":
+                st.write_stream(message)
+            else:
+                st.markdown(message)
+    
     def generate_response(self, chat_history):
         response = st.session_state['tinyllama'].generate_response(chat_history)
         return response
-    
-    def model_response(self, chat_history):
-        response = self.generate_response(chat_history)
-        return response
+
+    def save_message(self, role, message):
+        st.session_state['chat_history_db'].add_message_to_db(role, message)
 
     def run(self):
         self.display_history_on_sidebar()
@@ -95,9 +94,14 @@ class StreamlitApp:
             user_message = st.chat_input("Write your message...") 
             if user_message:
                 self.display_instant_message("user", user_message)
+                self.save_message('user', user_message)
+
                 chat_history = self.get_selected_chat_history()
-                response = self.model_response(chat_history)
+
+                response = self.generate_response(chat_history)
                 self.display_instant_message("assistant", response)
+                # Add Assistant message to chat history
+                self.save_message("assistant", st.session_state['tinyllama'].get_generated_response())
 
     
 if __name__ == '__main__':
