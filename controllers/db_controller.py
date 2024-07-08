@@ -2,7 +2,7 @@ from core.controller import Controller
 from models.chat_history_db import ChatHistoryDB
 
 
-class MainController(Controller):
+class DBController(Controller):
     def __init__(self):
         self.db = ChatHistoryDB()
     

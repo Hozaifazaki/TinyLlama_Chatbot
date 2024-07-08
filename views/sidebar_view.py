@@ -1,10 +1,9 @@
 import streamlit as st
-from controllers.main_controller import MainController
+from controllers.db_controller import DBController
 
 class SideBar:
     def __init__(self) -> None:
-        self._initialize_sidebar()
-        self.controller = MainController()
+        self.controller = DBController()
         
     def _initialize_sidebar(self):
         # Sidebar for session management
@@ -31,7 +30,12 @@ class SideBar:
                 st.session_state['chat_id'] = chat_id
                 # set chat id on chat history button clicked
                 self.controller.set_chat_id(st.session_state['chat_id'])
-                st.rerun()    
+                st.rerun()  
+
+    def show(self):
+        self._initialize_sidebar()
+        self._initialize_sidbar_button()
+        self.display_history_on_sidebar()
     
 if __name__ == '__main__':
     SideBar()

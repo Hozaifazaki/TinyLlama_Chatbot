@@ -3,7 +3,6 @@ import streamlit as st
 class MainView:
     def __init__(self) -> None:
         self._initialize_main_view()
-        pass
 
     def _initialize_main_view(self):
         # Set app title
