@@ -33,6 +33,8 @@ class LLMController:
         Load the model.
         """
         self.llm_model.load_model()
+        self.llm_model.connect_to_wikipedia_tool()
+        self.llm_model.initialize_llm_agent()
 
     def generate_response(self, chat_history=None):
         """

@@ -105,7 +105,7 @@ class StreamlitApp:
         models = ["TinyLlama-1.1B", "Phi-3-mini"]
 
         # Create the radio button widget and store the selected option
-        selected_model = st.sidebar.radio(label='', label_visibility='collapsed', options=models, index=None)
+        selected_model = st.sidebar.radio(label='select_model', label_visibility='collapsed', options=models, index=None)
 
         if selected_model:
             st.session_state['selected_model'] = models[0] if selected_model == models[0] else models[1]
@@ -139,7 +139,6 @@ class StreamlitApp:
                         self._load_model()
                     
                     with st.spinner("Generating Response..."):
-                        time.sleep(1)
                         response = self.generate_response(chat_history)
                         self.display_instant_message("assistant", response)
                     self.save_message("assistant", st.session_state['llm_model'].get_generated_response())

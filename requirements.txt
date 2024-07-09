@@ -8,3 +8,4 @@ langchain_core
 langchain
 llama-cpp-python
 tinydb
+wikipedia

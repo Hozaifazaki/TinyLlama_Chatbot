@@ -1,5 +1,6 @@
 from const.app_paths import AppPaths
 from langchain_community.llms import LlamaCpp
+from const.model_special_tokens import SpecialTokens
 
 class PhiMini:
     def __init__(self, gen_args, model_path=None) -> None:
@@ -31,10 +32,10 @@ class PhiMini:
         """
     def create_prompt_template(self):
         memory = ''
-        system_token = "<|system|>"
-        user_token = "<|user|>"
-        assistant_token = "<|assistant|>"
-        end_token = "<|end|>"
+        system_token = SpecialTokens.PHI_3['system_token']
+        user_token = SpecialTokens.PHI_3['user_token']
+        assistant_token = SpecialTokens.PHI_3['assistant_token']
+        end_token = SpecialTokens.PHI_3['end_token']
 
         memory += f"{system_token}\n{self.system_message}{end_token}\n"
 
